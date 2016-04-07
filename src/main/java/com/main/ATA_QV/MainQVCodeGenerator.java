@@ -113,6 +113,8 @@ public class MainQVCodeGenerator {
 						if(!functions.containsKey("clickfield")) {
 							functions.put("clickfield",codeLine);
 						}
+					} else if(strLine.contains("select") && strLine.contains("date")) {
+						
 					}
 				}
 			}

@@ -30,7 +30,7 @@ public class ImplementQV {
 	}
 	 public static void navigateToWebsite() {
 		 driver.manage().window().maximize();
-		 driver.navigate().to("http://http://redbus.in");
+		 driver.navigate().to("http://redbus.in");
 	 }
 
 	 public static void clickButton(List<String> labels) {
