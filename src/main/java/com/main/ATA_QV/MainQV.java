@@ -98,6 +98,22 @@ public class MainQV {
 		}
 	}
 	
+	public WebElement returnCalendarElement(List<String> listLabels) {
+		String date[] = listLabels.get(0).split(",");
+		System.out.println("Month: "+date[0]+" Day:"+date[1]);
+		List<WebElement> ele = driver.findElements(By.xpath("//table/descendant::*[text()='"+date[0]+"']"));
+		System.out.println("The tables size: "+ele.size());
+		int visible = 0;
+		for(WebElement temp : ele) {
+			if(temp.isDisplayed()) {
+				break;
+			}
+			visible++;
+		}
+		WebElement element = ele.get(visible).findElement(By.xpath("./ancestor::table/descendant::td[text()='"+date[1]+"']"));
+		return element;
+	}
+	
 	public WebElement returnWebElement(List<String> listLabels) {
 		List<WebElement> listOfElement = driver.findElements(By.xpath("//html"));
 		clearAll();

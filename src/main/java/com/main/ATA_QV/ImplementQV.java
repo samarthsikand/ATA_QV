@@ -1,15 +1,16 @@
 package com.main.ATA_QV;
 
+import java.util.HashMap; 
+import java.util.List; 
+import java.util.Map; 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By; 
+import org.openqa.selenium.JavascriptExecutor; 
+import org.openqa.selenium.WebDriver; 
+import org.openqa.selenium.WebElement; 
 import org.openqa.selenium.firefox.FirefoxDriver;
-
-import com.google.common.collect.Lists;
 import com.main.ATA_QV.Tree.Node;
+import com.google.common.collect.Lists;
 
 public class ImplementQV {
 
@@ -25,7 +26,15 @@ public class ImplementQV {
 	Node<WebElement> rootNode = null;
 	List<String> labels = new ArrayList<String>();
 		 navigateToWebsite();
-		 labels = Lists.newArrayList("Search Buses","From");
+		 labels = Lists.newArrayList("From","To");
+		 insertIntoFieldValues(labels,"Delhi");
+		 labels = Lists.newArrayList("To","From");
+		 insertIntoFieldValues(labels,"Jaipur");
+		 labels = Lists.newArrayList("Date of Journey","From");
+		 clickField(labels);
+		 labels = Lists.newArrayList("Apr  2016,9");
+		 selectDateOnCalendar(labels);
+		 labels = Lists.newArrayList("Search Buses");
 		 clickButton(labels);
 	}
 	 public static void navigateToWebsite() {
@@ -33,9 +42,42 @@ public class ImplementQV {
 		 driver.navigate().to("http://redbus.in");
 	 }
 
+	 public static void insertIntoFieldValues(List<String> labels,String value) {
+		 ele = qvObj.returnWebElement(labels);
+		 if(ele != null) {
+			 WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
+			 inputEle.sendKeys(value);
+		 } else {
+			 System.out.println("Element could not be found!!");
+		 }
+	}
+
 	 public static void clickButton(List<String> labels) {
 		 ele = qvObj.returnWebElement(labels);
-		 ele.click();
+		 if(ele != null) {
+			 ele.click();
+		 } else {
+			 System.out.println("Element could not be found!!");
+		 }
+	}
+
+	 public static void selectDateOnCalendar(List<String> labels) {
+		 ele = qvObj.returnCalendarElement(labels);
+		 if(ele != null) {
+			 ele.click();
+		 } else {
+			 System.out.println("Date could not be found!!");
+		 }
+	}
+
+	 public static void clickField(List<String> labels) {
+		 ele = qvObj.returnWebElement(labels);
+		 if(ele != null) {
+			 WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
+			 inputEle.click();
+		 } else {
+			 System.out.println("Element could not be found!!");
+		 }
 	}
 
 }

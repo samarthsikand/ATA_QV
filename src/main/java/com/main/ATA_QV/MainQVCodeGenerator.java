@@ -23,13 +23,13 @@ public class MainQVCodeGenerator {
 		List<String> labelsList = new ArrayList<String>();
 		
 		try {
-			File file = new File("src/main/java/com/cucumber/ATAImplement/ImplementQV.java");
+			File file = new File("src/main/java/com/main/ATA_QV/ImplementQV.java");
 			if(!file.exists()){
     			file.createNewFile();
     		} else {
     			file.delete();
     		}
-			FileWriter fileWritter = new FileWriter("src/main/java/com/cucumber/ATAImplement/"+file.getName(),true);
+			FileWriter fileWritter = new FileWriter("src/main/java/com/main/ATA_QV/"+file.getName(),true);
 			fileWritter.write(getCode("Package Name"));
 			fileWritter.write(getCode("Header Files"));
 			fileWritter.write(getCode("Class Name"));
@@ -74,7 +74,11 @@ public class MainQVCodeGenerator {
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void clickButton(List<String> labels) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n"+
-									"\t\t ele.click();\n"+
+									"\t\t if(ele != null) {\n"+
+									"\t\t\t ele.click();\n"+
+									"\t\t } else {\n"+
+									"\t\t\t System.out.println(\"Element could not be found!!\");\n"+
+									"\t\t }\n"+
 									"\t}\n";
 						if(!functions.containsKey("clickbutton")) {
 							functions.put("clickbutton",codeLine);
@@ -91,7 +95,12 @@ public class MainQVCodeGenerator {
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void insertIntoFieldValues(List<String> labels,String value) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n" +
-									"\t\t ele.sendKeys(value);\n"+
+									"\t\t if(ele != null) {\n"+
+									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
+									"\t\t\t inputEle.sendKeys(value);\n"+
+									"\t\t } else {\n"+
+									"\t\t\t System.out.println(\"Element could not be found!!\");\n"+
+									"\t\t }\n"+
 									"\t}\n";
 						if(!functions.containsKey("setfield")) {
 							functions.put("setfield",codeLine);
@@ -107,14 +116,36 @@ public class MainQVCodeGenerator {
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void clickField(List<String> labels) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n"+
-									"\t\t WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
-									"\t\t inputEle.click();\n"+
+									"\t\t if(ele != null) {\n"+
+									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
+									"\t\t\t inputEle.click();\n"+
+									"\t\t } else {\n"+
+									"\t\t\t System.out.println(\"Element could not be found!!\");\n"+
+									"\t\t }\n"+
 									"\t}\n";
 						if(!functions.containsKey("clickfield")) {
 							functions.put("clickfield",codeLine);
 						}
 					} else if(strLine.contains("select") && strLine.contains("date")) {
-						
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels+"\""+str+"\",";
+						}
+						listLabels = listLabels.substring(0, listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
+									"\t\t selectDateOnCalendar(labels);\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectDateOnCalendar(List<String> labels) {\n"+
+									"\t\t ele = qvObj.returnCalendarElement(labels);\n"+
+									"\t\t if(ele != null) {\n"+
+									"\t\t\t ele.click();\n"+
+									"\t\t } else {\n"+
+									"\t\t\t System.out.println(\"Date could not be found!!\");\n"+
+									"\t\t }\n"+
+									"\t}\n";
+						if(!functions.containsKey("setdate")) {
+							functions.put("setdate", codeLine);
+						}
 					}
 				}
 			}
@@ -153,9 +184,9 @@ public class MainQVCodeGenerator {
 					  		 "import org.openqa.selenium.WebDriver; \n"+
 					  		 "import org.openqa.selenium.WebElement; \n"+
 					  		 "import org.openqa.selenium.firefox.FirefoxDriver;\n"+
-					  		 "import com.cucumber.ATAImplement.Tree.Node;\n"+
+					  		 "import com.main.ATA_QV.Tree.Node;\n"+
 					  		 "import com.google.common.collect.Lists;\n\n";
-		String packageName = "package com.cucumber.ATAImplement;\n\n";
+		String packageName = "package com.main.ATA_QV;\n\n";
 		String className = "public class ImplementQV {\n\n";
 		String webDriverName = "private static WebDriver driver = new FirefoxDriver();\n";
 		String privateStringURL = "private String URL;\n";
