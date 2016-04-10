@@ -63,16 +63,16 @@ public class MainQVCodeGenerator {
 						if(!functions.containsKey("navigation")) {
 							functions.put("navigation", codeLine);
 						}
-					} else if(strLine.contains("click") && strLine.contains("button")) {
+					} else if(strLine.contains("click") && (strLine.contains("button") || strLine.contains("link"))) {
 						labelsList = getWebElementAnchors(strLine);
 						for(String str : labelsList) {
 							listLabels = listLabels+"\""+str+"\",";
 						}
 						listLabels = listLabels.substring(0, listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
-									"\t\t clickButton(labels);\n";
+									"\t\t clickButtonOrLink(labels);\n";
 						fileWritter.write(codeLine);
-						codeLine = "\t public static void clickButton(List<String> labels) {\n"+
+						codeLine = "\t public static void clickButtonOrLink(List<String> labels) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n"+
 									"\t\t if(ele != null) {\n"+
 									"\t\t\t ele.click();\n"+
@@ -145,6 +145,37 @@ public class MainQVCodeGenerator {
 									"\t}\n";
 						if(!functions.containsKey("setdate")) {
 							functions.put("setdate", codeLine);
+						}
+					} else if(strLine.contains("select") && strLine.contains("radiobutton")) {
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels + "\"" + str + "\",";
+						}
+						listLabels = listLabels.substring(0, listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
+									"\t\t selectRadiobutton(labels);\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectRadiobutton(List<String> labels) {\n" +
+									"\t\t WebElement inputEle = null;\n" + 
+									"\t\t ele = qvObj.returnWebElement(labels);\n" +
+									"\t\t if(ele != null) {\n" +
+									"\t\t\t inputEle = ele.findElement(By.xpath(\"./following::input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
+									"\t\t\t if(inputEle != null) {\n" +
+									"\t\t\t\t inputEle.click();\n" + 
+									"\t\t\t } else {\n" + 
+									"\t\t\t\t System.out.println(\"Element not found!!\");\n" + 
+									"\t\t\t }\n" + 
+									"\t\t } else {\n" + 
+									"\t\t\t inputEle = driver.findElement(By.xpath(\"./input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
+									"\t\t\t if(inputEle != null) {\n" +
+									"\t\t\t\t inputEle.click();\n" + 
+									"\t\t\t } else {\n" + 
+									"\t\t\t\t System.out.println(\"Element not found!!\");\n" + 
+									"\t\t\t }\n" +
+									"\t\t }\n" +
+									"\t}\n";
+						if(!functions.containsKey("radiobutton")) {
+							functions.put("radiobutton", codeLine);
 						}
 					}
 				}

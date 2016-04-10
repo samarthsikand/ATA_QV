@@ -32,10 +32,8 @@ public class ImplementQV {
 		 insertIntoFieldValues(labels,"Jaipur");
 		 labels = Lists.newArrayList("Date of Journey","From");
 		 clickField(labels);
-		 labels = Lists.newArrayList("Apr  2016,9");
-		 selectDateOnCalendar(labels);
-		 labels = Lists.newArrayList("Search Buses");
-		 clickButton(labels);
+		 labels = Lists.newArrayList("Milk","question");
+		 selectRadiobutton(labels);
 	}
 	 public static void navigateToWebsite() {
 		 driver.manage().window().maximize();
@@ -52,21 +50,23 @@ public class ImplementQV {
 		 }
 	}
 
-	 public static void clickButton(List<String> labels) {
+	 public static void selectRadiobutton(List<String> labels) {
+		 WebElement inputEle = null;
 		 ele = qvObj.returnWebElement(labels);
 		 if(ele != null) {
-			 ele.click();
+			 inputEle = ele.findElement(By.xpath("./following::input[@type='radio' and @value='"+labels.get(0)+"']"));
+			 if(inputEle != null) {
+				 inputEle.click();
+			 } else {
+				 System.out.println("Element not found!!");
+			 }
 		 } else {
-			 System.out.println("Element could not be found!!");
-		 }
-	}
-
-	 public static void selectDateOnCalendar(List<String> labels) {
-		 ele = qvObj.returnCalendarElement(labels);
-		 if(ele != null) {
-			 ele.click();
-		 } else {
-			 System.out.println("Date could not be found!!");
+			 inputEle = driver.findElement(By.xpath("./input[@type='radio' and @value='"+labels.get(0)+"']"));
+			 if(inputEle != null) {
+				 inputEle.click();
+			 } else {
+				 System.out.println("Element not found!!");
+			 }
 		 }
 	}
 
