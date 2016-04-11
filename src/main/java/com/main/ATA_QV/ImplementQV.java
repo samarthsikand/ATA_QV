@@ -18,37 +18,21 @@ public class ImplementQV {
 	private String URL;
 	private static WebElement ele = null;
 
-		private static MainQV qvObj = new MainQV(driver);
+	private static MainQV qvObj = new MainQV(driver);
 
 	public static void main(String args[]) {
-	List<WebElement> listOfElement = driver.findElements(By.xpath("//html"));
+		List<WebElement> listOfElement = driver.findElements(By.xpath("//html"));
+		Node<WebElement> rootNode = null;
+		List<String> labels = new ArrayList<String>();
 
-	Node<WebElement> rootNode = null;
-	List<String> labels = new ArrayList<String>();
 		 navigateToWebsite();
-		 labels = Lists.newArrayList("From","To");
-		 insertIntoFieldValues(labels,"Delhi");
-		 labels = Lists.newArrayList("To","From");
-		 insertIntoFieldValues(labels,"Jaipur");
-		 labels = Lists.newArrayList("Date of Journey","From");
-		 clickField(labels);
-		 labels = Lists.newArrayList("Milk","question");
+		 labels = Lists.newArrayList("Mrs","Mr");
 		 selectRadiobutton(labels);
 	}
 	 public static void navigateToWebsite() {
 		 driver.manage().window().maximize();
-		 driver.navigate().to("http://redbus.in");
+		 driver.navigate().to("http://www.utexas.edu/learn/forms/radio.html");
 	 }
-
-	 public static void insertIntoFieldValues(List<String> labels,String value) {
-		 ele = qvObj.returnWebElement(labels);
-		 if(ele != null) {
-			 WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
-			 inputEle.sendKeys(value);
-		 } else {
-			 System.out.println("Element could not be found!!");
-		 }
-	}
 
 	 public static void selectRadiobutton(List<String> labels) {
 		 WebElement inputEle = null;
@@ -61,22 +45,12 @@ public class ImplementQV {
 				 System.out.println("Element not found!!");
 			 }
 		 } else {
-			 inputEle = driver.findElement(By.xpath("./input[@type='radio' and @value='"+labels.get(0)+"']"));
+			 inputEle = driver.findElement(By.xpath("//input[@type='radio' and @value='"+labels.get(0)+"']"));
 			 if(inputEle != null) {
 				 inputEle.click();
 			 } else {
 				 System.out.println("Element not found!!");
 			 }
-		 }
-	}
-
-	 public static void clickField(List<String> labels) {
-		 ele = qvObj.returnWebElement(labels);
-		 if(ele != null) {
-			 WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
-			 inputEle.click();
-		 } else {
-			 System.out.println("Element could not be found!!");
 		 }
 	}
 

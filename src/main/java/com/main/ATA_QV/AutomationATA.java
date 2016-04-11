@@ -69,10 +69,14 @@ public class AutomationATA {
 			}
 			element = driver.findElement(By.xpath(tuple.target));
 			List<String> listOfAnchors = generateAnchors(element);
-			System.out.println("The output is as follows: ");
-			for(String str : listOfAnchors) {
-				System.out.println(str);
-			}
+			if(listOfAnchors != null) {
+				System.out.println("The output is as follows: ");
+				for(String str : listOfAnchors) {
+					System.out.println(str);
+				}
+			} else {
+				System.out.println("There is no such anchor!!");
+			}	
 		}
 	}
 	
@@ -90,10 +94,11 @@ public class AutomationATA {
 			otherLabels = driver.findElements(By.xpath("//*[contains(text(),'"+label+"')]"));
 		} else {
 			label = ele.getTagName();
+			System.out.println("The tag name of target element is: "+ label);
 			otherLabels = driver.findElements(By.xpath("//"+label+""));
 		}
 		ANode<WebElement> subtreeTargetNode = getInterestingSubtree(otherLabels,ele);
-		System.out.println("The target tree is : "+subtreeTargetNode.data.getTagName()+" and its value is: "+ subtreeTargetNode.value + " class: "+subtreeTargetNode.data.getAttribute("class"));
+		System.out.println("The target tree is : "+subtreeTargetNode.data.getTagName()+" and its value is: "+ subtreeTargetNode.value + " ,class: "+subtreeTargetNode.data.getAttribute("class"));
 		listPathFromTargetToRoot = getPathFromTargetToRoot(ele);
 		setPathFromTargetToRoot.addAll(listPathFromTargetToRoot);
 		
@@ -101,7 +106,7 @@ public class AutomationATA {
 		for(WebElement otherEle : otherLabels) {
 			if(!otherEle.equals(ele)) {
 				otherTreeNode = getOtherSubTree(otherEle,setPathFromTargetToRoot);
-				System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" Class:" +otherTreeNode.data.getAttribute("class"));
+				System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" Class:" +otherTreeNode.data.getAttribute("id"));
 				
 				if(!otherLabelTrees.contains(otherTreeNode)) {
 					otherLabelTrees.add(otherTreeNode);
@@ -117,6 +122,7 @@ public class AutomationATA {
 				return listOfAnchors;
 			}
 			closestTree = getClosestTree(subtreeTargetNode,otherLabelTrees,listPathFromTargetToRoot,setPathFromTargetToRoot);
+			System.out.println("The closest tree details: Tag Name: "+closestTree.data.getTagName() + ", Id:"+closestTree.data.getAttribute("id") + ", Class" + closestTree.data.getAttribute("class"));
 			Set<ANode<WebElement>> closestTreeList = new HashSet<ANode<WebElement>>();
 			closestTreeList.add(closestTree);
 			distinctLabel = getDistinctLabel(subtreeTargetNode,closestTreeList);

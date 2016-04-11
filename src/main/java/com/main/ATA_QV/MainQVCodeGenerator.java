@@ -36,13 +36,13 @@ public class MainQVCodeGenerator {
 			fileWritter.write("\t"+getCode("Firefox driver"));
 			fileWritter.write("\t"+getCode("URL initialization"));
 			fileWritter.write("\t"+getCode("webelement initialization"));
-			fileWritter.write("\t\t"+getCode("MainQV object"));
+			fileWritter.write("\t"+getCode("MainQV object"));
 			fileWritter.write("\t"+getCode("Main function"));
-			fileWritter.write("\t"+getCode("Element list Html tag"));
+			fileWritter.write("\t\t"+getCode("Element list Html tag"));
 			/*fileWritter.write("\t"+getCode("webelement initialization"));*/
-			fileWritter.write("\t"+getCode("Root Node"));
+			fileWritter.write("\t\t"+getCode("Root Node"));
 			
-			fileWritter.write("\t"+getCode("Labels list"));
+			fileWritter.write("\t\t"+getCode("Labels list"));
 			FileInputStream fstream = new FileInputStream(featureFilePath);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 			while((strLine = br.readLine()) != null) {
@@ -166,7 +166,7 @@ public class MainQVCodeGenerator {
 									"\t\t\t\t System.out.println(\"Element not found!!\");\n" + 
 									"\t\t\t }\n" + 
 									"\t\t } else {\n" + 
-									"\t\t\t inputEle = driver.findElement(By.xpath(\"./input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
+									"\t\t\t inputEle = driver.findElement(By.xpath(\"//input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
 									"\t\t\t if(inputEle != null) {\n" +
 									"\t\t\t\t inputEle.click();\n" + 
 									"\t\t\t } else {\n" + 
@@ -176,6 +176,29 @@ public class MainQVCodeGenerator {
 									"\t}\n";
 						if(!functions.containsKey("radiobutton")) {
 							functions.put("radiobutton", codeLine);
+						}
+					} else if(strLine.contains("select") && strLine.contains("radiobuttongroup")) {
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels + "\"" +str + "\",";
+						}
+						String value = listLabels.substring(0,listLabels.indexOf(","));
+						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n" +
+									"\t\t selectRadiobuttonGroup(labels,\""+value+"\");\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectRadiobuttonGroup(List<String> labels, String value) {\n" +
+									"\t\t WebElement inputEle = null;\n" +
+									"\t\t ele = qvObj.returnWebElement(labels);\n" + 
+									"\t\t if(ele != null) {\n" +
+									"\t\t\t inputEle = ele.findElement(By.xpath(\"./following::input[@type='radio' and @value='\"+value+\"']\"));\n"+
+									"\t\t\t inputEle.click();\n" + 
+									"\t\t } else {\n" +
+									"\t\t\t System.out.println(\"Element not found!!\");\n"+
+									"\t\t }\n"+
+									"\t}\n";
+						if(!functions.containsKey("radiobuttongroup")) {
+							functions.put("radiobuttongroup", codeLine);
 						}
 					}
 				}
@@ -224,9 +247,9 @@ public class MainQVCodeGenerator {
 		String mainFunction = "public static void main(String args[]) {\n";
 		String webElement = "private static WebElement ele = null;\n\n";
 		String mainQv = "private static MainQV qvObj = new MainQV(driver);\n\n";
-		String listOfElement = "List<WebElement> listOfElement = driver.findElements(By.xpath(\"//html\"));\n\n";
+		String listOfElement = "List<WebElement> listOfElement = driver.findElements(By.xpath(\"//html\"));\n";
 		String rootNode = "Node<WebElement> rootNode = null;\n";
-		String labelsList = "List<String> labels = new ArrayList<String>();\n";
+		String labelsList = "List<String> labels = new ArrayList<String>();\n\n";
 		
 		if(codeLine.equalsIgnoreCase("Header files")) {
 			return headerFiles;

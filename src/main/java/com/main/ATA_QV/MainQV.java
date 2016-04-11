@@ -176,8 +176,14 @@ public class MainQV {
 	public void pushMapElementsToStack(List<String> listLabels) {
 		for(String str : listLabels) {
 			System.out.println("Pushing " + str);
-			stack.push(mapLabelToNode.get(str));
-			System.out.println(stack.peek().label+ " Size:"+stack.size());
+			System.out.println("Node being pushed: "+mapLabelToNode.get(str));
+			if(mapLabelToNode.get(str) != null) {
+				stack.push(mapLabelToNode.get(str));
+				System.out.println(stack.peek().label+ " Size:"+stack.size());
+			} else {
+				System.out.println("No label as "+str);
+			}
+			
 		}
 	}
 	
@@ -185,6 +191,9 @@ public class MainQV {
 		while(true) {
 			StackNode<WebElement> stackNode1 = stack.pop();
 			StackNode<WebElement> stackNode2 = stack.pop();
+			if(stackNode1 == null || stackNode2 == null) {
+				return null;
+			}
 			System.out.println("Running filter instances...");
 			System.out.println("Stack Node 1: "+stackNode1.label);
 			System.out.println("Stack Node 2: "+stackNode2.label);

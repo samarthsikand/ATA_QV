@@ -53,7 +53,7 @@ public class Stack<Item> implements Iterable<Item>{
      * Throw an exception if no such item exists because the stack is empty.
      */
     public Item pop() {
-        if (isEmpty()) throw new RuntimeException("Stack underflow");
+        if (isEmpty()) return null;
         Item item = first.item;        // save item to return
         first = first.next;            // delete first node
         N--;
