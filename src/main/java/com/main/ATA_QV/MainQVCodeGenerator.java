@@ -200,7 +200,45 @@ public class MainQVCodeGenerator {
 						if(!functions.containsKey("radiobuttongroup")) {
 							functions.put("radiobuttongroup", codeLine);
 						}
+					} else if(strLine.contains("select") && strLine.contains("checkbox")) {
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels + "\"" + str + "\",";
+						}
+						listLabels = listLabels.substring(0, listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
+								"\t\t selectCheckbox(labels);\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectCheckbox(List<String> labels) {\n"+
+									"\t\t ele = qvObj.returnWebElement(labels);\n"+
+									"\t\t if(ele != null) {\n"+
+									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./preceding-sibling::input[@type='checkbox']\"));\n" +
+									"\t\t\t if(inputEle != null) {\n" +
+									"\t\t\t\t inputEle.click();\n" +
+									"\t\t\t } else {\n"+
+									"\t\t\t\t System.out.println(\"Checkbox not found!!\");\n"+
+									"\t\t\t }\n"+
+									"\t\t } else {\n"+
+									"\t\t\t WebElement inputEle = driver.findElement(By.xpath(\"//input[@type='checkbox' and @value='\"+labels.get(0)+\"']\"));\n"+
+									"\t\t\t if(inputEle != null) {\n" +
+									"\t\t\t\t inputEle.click();\n"+
+									"\t\t\t } else {\n"+
+									"\t\t\t\t System.out.println(\"Checkbox is not present!!\");"+
+									"\t\t\t }\n"+
+									"\t\t }\n"+
+									"\t}\n";
+						if(!functions.containsKey("checkbox")) {
+							functions.put("checkbox", codeLine);
+						}
+					} else if(strLine.contains("select") && strLine.contains("dropdown")) {
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels + "\"" +str + "\",";
+						}
+						String value = listLabels.substring(0,listLabels.indexOf(","));
+						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
 					}
+					
 				}
 			}
 			fileWritter.write("\t}\n");
