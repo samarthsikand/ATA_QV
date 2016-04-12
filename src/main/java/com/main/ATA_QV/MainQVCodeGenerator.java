@@ -207,7 +207,7 @@ public class MainQVCodeGenerator {
 						}
 						listLabels = listLabels.substring(0, listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
-								"\t\t selectCheckbox(labels);\n";
+									"\t\t selectCheckbox(labels);\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectCheckbox(List<String> labels) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n"+
@@ -237,6 +237,27 @@ public class MainQVCodeGenerator {
 						}
 						String value = listLabels.substring(0,listLabels.indexOf(","));
 						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
+									"\t\t selectCheckbox(labels);\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectDropdown(List<String> labels, String value) {\n" +
+									"\t\t Select se = null;\n" +
+									"\t\t ele = qvObj.returnWebElement(labels);\n" +
+									"\t\t if(ele != null) {\n" +
+									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./following::select[1] | ./descendant::select[1] \"));\n"+
+									"\t\t\t if(inputEle != null) {\n" +
+									"\t\t\t\t se = new Select(inputEle);\n" +
+									"\t\t\t\t se.selectByVisibleText(value);\n" +
+									"\t\t\t } else {\n" +
+									"\t\t\t\t System.out.println(\"Dropdown not found!!\");\n" +
+									"\t\t\t }\n"+
+									"\t\t } else {\n" +
+									"\t\t\t System.out.println(\"Dropdown not found!!\");\n"+
+									"\t\t }\n"+
+									"\t }\n";
+						if(!functions.containsKey("dropdown")) {
+							functions.put("dropdown", codeLine);
+						}
 					}
 					
 				}
@@ -272,7 +293,7 @@ public class MainQVCodeGenerator {
 					  		 "import java.util.Map; \n"+
 					  		 "import java.util.ArrayList;\n"+
 					  		 "import org.openqa.selenium.By; \n"+
-					  		 "import org.openqa.selenium.JavascriptExecutor; \n"+
+					  		 "import org.openqa.selenium.support.ui.Select; \n"+
 					  		 "import org.openqa.selenium.WebDriver; \n"+
 					  		 "import org.openqa.selenium.WebElement; \n"+
 					  		 "import org.openqa.selenium.firefox.FirefoxDriver;\n"+

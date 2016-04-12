@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map; 
 import java.util.ArrayList;
 import org.openqa.selenium.By; 
-import org.openqa.selenium.JavascriptExecutor; 
+import org.openqa.selenium.support.ui.Select; 
 import org.openqa.selenium.WebDriver; 
 import org.openqa.selenium.WebElement; 
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -26,8 +26,14 @@ public class ImplementQV {
 		List<String> labels = new ArrayList<String>();
 
 		 navigateToWebsite();
-		 labels = Lists.newArrayList("Mrs","Mr");
+		 labels = Lists.newArrayList("Mr","Mrs");
 		 selectRadiobutton(labels);
+		 labels = Lists.newArrayList("abc","xyz","klmn");
+		 selectRadiobutton(labels);
+		 labels = Lists.newArrayList("xyz","abc");
+		 selectCheckbox(labels);
+		 labels = Lists.newArrayList("abc","xyz");
+		 selectCheckbox(labels);
 	}
 	 public static void navigateToWebsite() {
 		 driver.manage().window().maximize();
@@ -53,5 +59,39 @@ public class ImplementQV {
 			 }
 		 }
 	}
+
+	 public static void selectCheckbox(List<String> labels) {
+		 ele = qvObj.returnWebElement(labels);
+		 if(ele != null) {
+			 WebElement inputEle = ele.findElement(By.xpath("./preceding-sibling::input[@type='checkbox']"));
+			 if(inputEle != null) {
+				 inputEle.click();
+			 } else {
+				 System.out.println("Checkbox not found!!");
+			 }
+		 } else {
+			 WebElement inputEle = driver.findElement(By.xpath("//input[@type='checkbox' and @value='"+labels.get(0)+"']"));
+			 if(inputEle != null) {
+				 inputEle.click();
+			 } else {
+				 System.out.println("Checkbox is not present!!");			 }
+		 }
+	}
+
+	 public static void selectDropdown(List<String> labels, String value) {
+		 Select se = null;
+		 ele = qvObj.returnWebElement(labels);
+		 if(ele != null) {
+			 WebElement inputEle = ele.findElement(By.xpath("./following::select[1] | ./descendant::select[1] "));
+			 if(inputEle != null) {
+				 se = new Select(inputEle);
+				 se.selectByVisibleText(value);
+			 } else {
+				 System.out.println("Dropdown not found!!");
+			 }
+		 } else {
+			 System.out.println("Dropdown not found!!");
+		 }
+	 }
 
 }
