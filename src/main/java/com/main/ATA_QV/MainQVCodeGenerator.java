@@ -177,7 +177,7 @@ public class MainQVCodeGenerator {
 						if(!functions.containsKey("radiobutton")) {
 							functions.put("radiobutton", codeLine);
 						}
-					} else if(strLine.contains("select") && strLine.contains("radiobuttongroup")) {
+					} else if(strLine.contains("select") && strLine.contains("radiobutton") && strLine.contains("group")) {
 						labelsList = getWebElementAnchors(strLine);
 						for(String str : labelsList) {
 							listLabels = listLabels + "\"" +str + "\",";
@@ -238,7 +238,7 @@ public class MainQVCodeGenerator {
 						String value = listLabels.substring(0,listLabels.indexOf(","));
 						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
-									"\t\t selectCheckbox(labels);\n";
+									"\t\t selectCheckbox(labels,\""+value+"\");\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectDropdown(List<String> labels, String value) {\n" +
 									"\t\t Select se = null;\n" +
@@ -257,6 +257,39 @@ public class MainQVCodeGenerator {
 									"\t }\n";
 						if(!functions.containsKey("dropdown")) {
 							functions.put("dropdown", codeLine);
+						}
+					} else if(strLine.contains("select") && strLine.contains("multiselect")) {
+						labelsList = getWebElementAnchors(strLine);
+						for(String str : labelsList) {
+							listLabels = listLabels + "\"" + str + "\",";
+						}
+						String value = listLabels.substring(0,listLabels.indexOf(","));
+						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
+						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n" +
+									"\t\t selectMultiselect(labels,\""+value+"\");\n";
+						fileWritter.write(codeLine);
+						codeLine = "\t public static void selectMultiselect(List<String> labels,String value) {\n" +
+									"\t\t Select se = null;\n" +
+									"\t\t ele = qvObj.returnWebElement(labels);\n" + 
+									"\t\t if(ele != null) {\n" +
+									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./following::select[@multiple]\"));" +
+									"\t\t\t if(inputEle != null) {\n"+
+									"\t\t\t\t String[] listOfValues = value.split(\";\");\n" +
+									"\t\t\t\t if(listOfValues != null && listOfValues.size() != 0) {\n"+
+									"\t\t\t\t\t se = new Select(inputEle);\n"+
+									"\t\t\t\t\t for(String str : listOfValues) {\n"+
+									"\t\t\t\t\t\t se.selectByVisibleText(str);\n" +
+									"\t\t\t\t\t }\n" +
+									"\t\t\t\t }\n"+
+									"\t\t\t } else { \n"+
+									"\t\t\t\t System.out.println(\"Multiselect not found!!\");\n"+
+									"\t\t\t }\n"+
+									"\t\t } else {\n"+
+									"\t\t\t System.out.println(\"Multiselect not found!!\");\n"+
+									"\t\t }\n"+
+									"\t }";
+						if(!functions.containsKey("multiselect")) {
+							functions.put("multiselect", codeLine);
 						}
 					}
 					
