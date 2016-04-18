@@ -75,8 +75,12 @@ public class AutomationATA {
 					System.out.println(str);
 				}
 			} else {
-				System.out.println("There is no such anchor!!");
-			}	
+				System.out.println("The output is as follows: There is no such anchor!!");
+			}
+			
+			for(WebElement eleNode : mapWebElementToNode.keySet()) {
+				mapWebElementToNode.get(eleNode).value = 0;
+			}
 		}
 	}
 	
@@ -106,7 +110,7 @@ public class AutomationATA {
 		for(WebElement otherEle : otherLabels) {
 			if(!otherEle.equals(ele)) {
 				otherTreeNode = getOtherSubTree(otherEle,setPathFromTargetToRoot);
-				System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" Class:" +otherTreeNode.data.getAttribute("id"));
+				System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" ID:" +otherTreeNode.data.getAttribute("id") + " Class:" + otherTreeNode.data.getAttribute("class"));
 				
 				if(!otherLabelTrees.contains(otherTreeNode)) {
 					otherLabelTrees.add(otherTreeNode);
