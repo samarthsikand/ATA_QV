@@ -5,5 +5,5 @@ Feature: Testing the redbus.in website services
 	When I select "Mr" radiobutton near "Mrs"
 	And I select "abc" from "xyz" radiobuttongroup near "klmn"
 	And I select "xyz" checkbox near "abc"
-	And I select "value" from "abc" dropdown near "xyz"
+	And I select "sads" from "abc" dropdown near "xyz"
 	Then I verify the results

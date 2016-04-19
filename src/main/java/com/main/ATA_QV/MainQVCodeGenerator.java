@@ -74,7 +74,7 @@ public class MainQVCodeGenerator {
 									"\t\t clickButtonOrLink(labels);\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void clickButtonOrLink(List<String> labels) {\n"+
-									"\t\t ele = qvObj.returnWebElement(labels);\n"+
+									"\t\t ele = returnFinalElement(labels,\"clickable\");\n"+
 									"\t\t if(ele != null) {\n"+
 									"\t\t\t ele.click();\n"+
 									"\t\t } else {\n"+
@@ -95,7 +95,7 @@ public class MainQVCodeGenerator {
 									"\t\t insertIntoFieldValues(labels,\""+labelsList.get(labelsList.size()-1)+"\");\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void insertIntoFieldValues(List<String> labels,String value) {\n"+
-									"\t\t ele = qvObj.returnWebElement(labels);\n" +
+									"\t\t ele = returnFinalElement(labels,\"setfield\");\n" +
 									"\t\t if(ele != null) {\n"+
 									"\t\t\t //WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
 									"\t\t\t ele.sendKeys(value);\n"+
@@ -116,7 +116,7 @@ public class MainQVCodeGenerator {
 									"\t\t clickField(labels);\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void clickField(List<String> labels) {\n"+
-									"\t\t ele = qvObj.returnWebElement(labels);\n"+
+									"\t\t ele = returnFinalElement(labels,\"clickable\");\n"+
 									"\t\t if(ele != null) {\n"+
 									"\t\t\t //WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
 									"\t\t\t inputEle.click();\n"+
@@ -157,23 +157,12 @@ public class MainQVCodeGenerator {
 									"\t\t selectRadiobutton(labels);\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectRadiobutton(List<String> labels) {\n" +
-									"\t\t WebElement inputEle = null;\n" + 
-									"\t\t ele = qvObj.returnWebElement(labels);\n" +
+									"\t\t ele = returnFinalElement(labels,\"selectradiobutton\");\n" +
 									"\t\t if(ele != null) {\n" +
-									"\t\t\t inputEle = ele.findElement(By.xpath(\"./following::input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
-									"\t\t\t if(inputEle != null) {\n" +
-									"\t\t\t\t inputEle.click();\n" + 
-									"\t\t\t } else {\n" + 
-									"\t\t\t\t System.out.println(\"Element not found!!\");\n" + 
-									"\t\t\t }\n" + 
-									"\t\t } else {\n" + 
-									"\t\t\t inputEle = driver.findElement(By.xpath(\"//input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
-									"\t\t\t if(inputEle != null) {\n" +
-									"\t\t\t\t inputEle.click();\n" + 
-									"\t\t\t } else {\n" + 
-									"\t\t\t\t System.out.println(\"Element not found!!\");\n" + 
-									"\t\t\t }\n" +
-									"\t\t }\n" +
+									"\t\t\t ele.click();\n"+
+									"\t\t } else {\n" +
+									"\t\t\t System.out.println(\"The radiobutton was not found!!\");\n"+
+									"\t\t }\n"+
 									"\t}\n";
 						if(!functions.containsKey("radiobutton")) {
 							functions.put("radiobutton", codeLine);
@@ -183,7 +172,7 @@ public class MainQVCodeGenerator {
 						for(String str : labelsList) {
 							listLabels = listLabels + "\"" +str + "\",";
 						}
-						String value = listLabels.substring(0,listLabels.indexOf(","));
+						String value = labelsList.get(0);
 						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n" +
 									"\t\t selectRadiobuttonGroup(labels,\""+value+"\");\n";
@@ -211,21 +200,11 @@ public class MainQVCodeGenerator {
 									"\t\t selectCheckbox(labels);\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectCheckbox(List<String> labels) {\n"+
-									"\t\t ele = qvObj.returnWebElement(labels);\n"+
+									"\t\t ele = returnFinalElement(labels,\"selectcheckbox\");\n"+
 									"\t\t if(ele != null) {\n"+
-									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./preceding-sibling::input[@type='checkbox']\"));\n" +
-									"\t\t\t if(inputEle != null) {\n" +
-									"\t\t\t\t inputEle.click();\n" +
-									"\t\t\t } else {\n"+
-									"\t\t\t\t System.out.println(\"Checkbox not found!!\");\n"+
-									"\t\t\t }\n"+
+									"\t\t\t ele.click();\n"+
 									"\t\t } else {\n"+
-									"\t\t\t WebElement inputEle = driver.findElement(By.xpath(\"//input[@type='checkbox' and @value='\"+labels.get(0)+\"']\"));\n"+
-									"\t\t\t if(inputEle != null) {\n" +
-									"\t\t\t\t inputEle.click();\n"+
-									"\t\t\t } else {\n"+
-									"\t\t\t\t System.out.println(\"Checkbox is not present!!\");"+
-									"\t\t\t }\n"+
+									"\t\t\t System.out.println(\"Checkbox could not be found!!\");\n"+
 									"\t\t }\n"+
 									"\t}\n";
 						if(!functions.containsKey("checkbox")) {
@@ -236,22 +215,18 @@ public class MainQVCodeGenerator {
 						for(String str : labelsList) {
 							listLabels = listLabels + "\"" +str + "\",";
 						}
-						String value = listLabels.substring(0,listLabels.indexOf(","));
+						String value = labelsList.get(0);
+						
 						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n"+
-									"\t\t selectCheckbox(labels,\""+value+"\");\n";
+									"\t\t selectDropdown(labels,\""+value+"\");\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectDropdown(List<String> labels, String value) {\n" +
 									"\t\t Select se = null;\n" +
-									"\t\t ele = qvObj.returnWebElement(labels);\n" +
+									"\t\t ele = returnFinalElement(labels,\"dropdown\");\n" +
 									"\t\t if(ele != null) {\n" +
-									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./following::select[1] | ./descendant::select[1] \"));\n"+
-									"\t\t\t if(inputEle != null) {\n" +
-									"\t\t\t\t se = new Select(inputEle);\n" +
-									"\t\t\t\t se.selectByVisibleText(value);\n" +
-									"\t\t\t } else {\n" +
-									"\t\t\t\t System.out.println(\"Dropdown not found!!\");\n" +
-									"\t\t\t }\n"+
+									"\t\t\t se = new Select(ele);\n" +
+									"\t\t\t se.selectByVisibleText(value);\n" +
 									"\t\t } else {\n" +
 									"\t\t\t System.out.println(\"Dropdown not found!!\");\n"+
 									"\t\t }\n"+
@@ -264,26 +239,21 @@ public class MainQVCodeGenerator {
 						for(String str : labelsList) {
 							listLabels = listLabels + "\"" + str + "\",";
 						}
-						String value = listLabels.substring(0,listLabels.indexOf(","));
+						String value = labelsList.get(0);
 						listLabels = listLabels.substring(listLabels.indexOf(",")+1,listLabels.length()-1);
 						codeLine = "\t\t labels = Lists.newArrayList("+listLabels+");\n" +
 									"\t\t selectMultiselect(labels,\""+value+"\");\n";
 						fileWritter.write(codeLine);
 						codeLine = "\t public static void selectMultiselect(List<String> labels,String value) {\n" +
 									"\t\t Select se = null;\n" +
-									"\t\t ele = qvObj.returnWebElement(labels);\n" + 
+									"\t\t ele = returnFinalElement(labels,\"multiselect\");\n" + 
 									"\t\t if(ele != null) {\n" +
-									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./following::select[@multiple]\"));" +
-									"\t\t\t if(inputEle != null) {\n"+
-									"\t\t\t\t String[] listOfValues = value.split(\";\");\n" +
-									"\t\t\t\t if(listOfValues != null && listOfValues.size() != 0) {\n"+
-									"\t\t\t\t\t se = new Select(inputEle);\n"+
-									"\t\t\t\t\t for(String str : listOfValues) {\n"+
-									"\t\t\t\t\t\t se.selectByVisibleText(str);\n" +
-									"\t\t\t\t\t }\n" +
-									"\t\t\t\t }\n"+
-									"\t\t\t } else { \n"+
-									"\t\t\t\t System.out.println(\"Multiselect not found!!\");\n"+
+									"\t\t\t String[] listOfValues = value.split(\";\");\n" +
+									"\t\t\t if(listOfValues != null && listOfValues.size() != 0) {\n"+
+									"\t\t\t\t se = new Select(inputEle);\n"+
+									"\t\t\t\t for(String str : listOfValues) {\n"+
+									"\t\t\t\t\t se.selectByVisibleText(str);\n" +
+									"\t\t\t\t }\n" +
 									"\t\t\t }\n"+
 									"\t\t } else {\n"+
 									"\t\t\t System.out.println(\"Multiselect not found!!\");\n"+
@@ -305,12 +275,13 @@ public class MainQVCodeGenerator {
 			
 			codeLine = "\t public static WebElement returnFinalElement(List<String> labels, String elementName) {\n"+
 						"\t\t WebElement finalEle = null;\n"+
+						"\t\t WebElement inputEle = null;\n"+
 						"\t\t if(elementName.equals(\"clickable\") || elementName.equals(\"setfield\")) {\n"+
 						"\t\t\t finalEle = qvObj.returnWebElement(labels);\n"+
 						"\t\t } else if(elementName.equals(\"selectdate\")) {\n"+
 						"\t\t\t finalEle = qvObj.returnCalendarElement(labels);\n"+
 						"\t\t } else if(elementName.equals(\"selectradiobutton\")) {\n"+
-						"\t\t\t WebElement inputEle = null;\n"+
+						"\t\t\t inputEle = null;\n"+
 						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
 						"\t\t\t if(inputEle != null) {\n" +
 						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./following::input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
@@ -322,14 +293,27 @@ public class MainQVCodeGenerator {
 						"\t\t\t\t }\n"+
 						"\t\t\t }\n"+
 						"\t\t } else if(elementName.equals(\"selectcheckbox\")) {\n"+
-						"\t\t\t WebElement inputEle = null;\n"+
+						"\t\t\t inputEle = null;\n"+
 						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
 						"\t\t\t if(inputEle != null) {\n"+
 						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./preceding-sibling::input[@type='checkbox']\"));\n"+
 						"\t\t\t } else {\n"+
 						"\t\t\t\t finalEle = driver.findElement(By.xpath(\"//input[@type='checkbox' and @value='\"+labels.get(0)+\"']\"));\n"+
 						"\t\t\t }\n"+
+						"\t\t } else if(elementName.equals(\"dropdown\")) {\n"+
+						"\t\t\t inputEle = null;\n"+
+						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
+						"\t\t\t if(inputEle != null) {\n"+
+						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./following::select[1] | ./descendant::select[1]\"));\n"+
+						"\t\t\t }\n "+
+						"\t\t } else if(elementName.equals(\"multiselect\")) {\n"+
+						"\t\t\t inputEle = null;\n"+
+						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
+						"\t\t\t if(inputEle != null) {\n"+
+						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./following::select[@multiple]\"));\n"+
+						"\t\t\t }\n"+
 						"\t\t }\n"+
+						"\t\t return finalEle;\n"+
 						"\t }\n";
 			fileWritter.write(codeLine);
 			fileWritter.write("}");

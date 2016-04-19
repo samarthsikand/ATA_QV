@@ -20,7 +20,7 @@ public class AutomationATAMain {
 		AutomationATA newObj = new AutomationATA();
 		newObj.driver = new FirefoxDriver();
 		newObj.driver.manage().window().maximize();
-		File file = new File("C:/Users/samarth_sikand/Desktop/redbus.html");
+		File file = new File("C:/Users/hp/Desktop/htmlform.html");
 		try {
 			Document doc = Jsoup.parse(file,"UTF-8");
 			List<Tuple> listOfTuples = new ArrayList<Tuple>();
@@ -28,7 +28,7 @@ public class AutomationATAMain {
 //			driver.navigate().to("http://bell.ca");
 //			driver.findElement(By.xpath("//button[text()='Save my selections']")).click();
 			 
-			newObj.driver.navigate().to("https://redbus.in");
+			newObj.driver.navigate().to("https://www.utexas.edu/learn/forms/radio.html");
 //			driver.findElement(By.xpath("//a[@class='iconLink close']")).click();
 //			driver.findElements(By.xpath("//a[contains(text(),'ISAs')]")).get(6).click();
 			//driver.findElement(By.xpath("//a[contains(text(),'Enterprise')]")).click();
