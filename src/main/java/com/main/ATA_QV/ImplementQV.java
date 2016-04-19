@@ -26,72 +26,47 @@ public class ImplementQV {
 		List<String> labels = new ArrayList<String>();
 
 		 navigateToWebsite();
-		 labels = Lists.newArrayList("Mr","Mrs");
-		 selectRadiobutton(labels);
-		 labels = Lists.newArrayList("abc","xyz","klmn");
-		 selectRadiobutton(labels);
-		 labels = Lists.newArrayList("xyz","abc");
-		 selectCheckbox(labels);
-		 labels = Lists.newArrayList("abc","xyz");
-		 selectCheckbox(labels);
+		 labels = Lists.newArrayList("input","From");
+		 insertIntoFieldValues(labels,"Delhi");
+		 labels = Lists.newArrayList("input","To");
+		 insertIntoFieldValues(labels,"Jaipur");
+		 labels = Lists.newArrayList("Date of Journey","From");
+		 clickField(labels);
+		 labels = Lists.newArrayList("Apr  2016,22");
+		 selectDateOnCalendar(labels);
 	}
 	 public static void navigateToWebsite() {
 		 driver.manage().window().maximize();
-		 driver.navigate().to("http://www.utexas.edu/learn/forms/radio.html");
+		 driver.navigate().to("http://redbus.in");
 	 }
 
-	 public static void selectRadiobutton(List<String> labels) {
-		 WebElement inputEle = null;
+	 public static void insertIntoFieldValues(List<String> labels,String value) {
 		 ele = qvObj.returnWebElement(labels);
 		 if(ele != null) {
-			 inputEle = ele.findElement(By.xpath("./following::input[@type='radio' and @value='"+labels.get(0)+"']"));
-			 if(inputEle != null) {
-				 inputEle.click();
-			 } else {
-				 System.out.println("Element not found!!");
-			 }
+			 //WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
+			 ele.sendKeys(value);
 		 } else {
-			 inputEle = driver.findElement(By.xpath("//input[@type='radio' and @value='"+labels.get(0)+"']"));
-			 if(inputEle != null) {
-				 inputEle.click();
-			 } else {
-				 System.out.println("Element not found!!");
-			 }
+			 System.out.println("Element could not be found!!");
 		 }
 	}
 
-	 public static void selectCheckbox(List<String> labels) {
-		 ele = qvObj.returnWebElement(labels);
+	 public static void selectDateOnCalendar(List<String> labels) {
+		 ele = qvObj.returnCalendarElement(labels);
 		 if(ele != null) {
-			 WebElement inputEle = ele.findElement(By.xpath("./preceding-sibling::input[@type='checkbox']"));
-			 if(inputEle != null) {
-				 inputEle.click();
-			 } else {
-				 System.out.println("Checkbox not found!!");
-			 }
+			 ele.click();
 		 } else {
-			 WebElement inputEle = driver.findElement(By.xpath("//input[@type='checkbox' and @value='"+labels.get(0)+"']"));
-			 if(inputEle != null) {
-				 inputEle.click();
-			 } else {
-				 System.out.println("Checkbox is not present!!");			 }
+			 System.out.println("Date could not be found!!");
 		 }
 	}
 
-	 public static void selectDropdown(List<String> labels, String value) {
-		 Select se = null;
+	 public static void clickField(List<String> labels) {
 		 ele = qvObj.returnWebElement(labels);
 		 if(ele != null) {
-			 WebElement inputEle = ele.findElement(By.xpath("./following::select[1] | ./descendant::select[1] "));
-			 if(inputEle != null) {
-				 se = new Select(inputEle);
-				 se.selectByVisibleText(value);
-			 } else {
-				 System.out.println("Dropdown not found!!");
-			 }
+			 WebElement inputEle = ele.findElement(By.xpath("./descendant::input[1] | ./following::input[1]"));
+			 inputEle.click();
 		 } else {
-			 System.out.println("Dropdown not found!!");
+			 System.out.println("Element could not be found!!");
 		 }
-	 }
+	}
 
 }

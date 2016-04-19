@@ -21,6 +21,7 @@ public class MainQVCodeGenerator {
 		String strLine;
 		Map<String,String> functions = new HashMap<String,String>();
 		List<String> labelsList = new ArrayList<String>();
+		String codeLine = "";
 		
 		try {
 			File file = new File("src/main/java/com/main/ATA_QV/ImplementQV.java");
@@ -46,7 +47,7 @@ public class MainQVCodeGenerator {
 			FileInputStream fstream = new FileInputStream(featureFilePath);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 			while((strLine = br.readLine()) != null) {
-				String codeLine = "";
+				codeLine = "";
 				String listLabels = "";
 				strLine = strLine.trim();
 				if(strLine.length() > 0) {
@@ -96,8 +97,8 @@ public class MainQVCodeGenerator {
 						codeLine = "\t public static void insertIntoFieldValues(List<String> labels,String value) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n" +
 									"\t\t if(ele != null) {\n"+
-									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
-									"\t\t\t inputEle.sendKeys(value);\n"+
+									"\t\t\t //WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
+									"\t\t\t ele.sendKeys(value);\n"+
 									"\t\t } else {\n"+
 									"\t\t\t System.out.println(\"Element could not be found!!\");\n"+
 									"\t\t }\n"+
@@ -117,7 +118,7 @@ public class MainQVCodeGenerator {
 						codeLine = "\t public static void clickField(List<String> labels) {\n"+
 									"\t\t ele = qvObj.returnWebElement(labels);\n"+
 									"\t\t if(ele != null) {\n"+
-									"\t\t\t WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
+									"\t\t\t //WebElement inputEle = ele.findElement(By.xpath(\"./descendant::input[1] | ./following::input[1]\"));\n"+
 									"\t\t\t inputEle.click();\n"+
 									"\t\t } else {\n"+
 									"\t\t\t System.out.println(\"Element could not be found!!\");\n"+
@@ -301,6 +302,36 @@ public class MainQVCodeGenerator {
 				fileWritter.write(functions.get(str));
 				fileWritter.write("\n");
 			}
+			
+			codeLine = "\t public static WebElement returnFinalElement(List<String> labels, String elementName) {\n"+
+						"\t\t WebElement finalEle = null;\n"+
+						"\t\t if(elementName.equals(\"clickable\") || elementName.equals(\"setfield\")) {\n"+
+						"\t\t\t finalEle = qvObj.returnWebElement(labels);\n"+
+						"\t\t } else if(elementName.equals(\"selectdate\")) {\n"+
+						"\t\t\t finalEle = qvObj.returnCalendarElement(labels);\n"+
+						"\t\t } else if(elementName.equals(\"selectradiobutton\")) {\n"+
+						"\t\t\t WebElement inputEle = null;\n"+
+						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
+						"\t\t\t if(inputEle != null) {\n" +
+						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./following::input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
+						"\t\t\t\t if(finalEle == null) {\n" +
+						"\t\t\t\t\t finalEle = driver.findElement(By.xpath(\"//input[@type='radio' and @value='\"+labels.get(0)+\"']\"));\n" +
+						"\t\t\t\t\t if(finalEle == null) {\n" + 
+						"\t\t\t\t\t\t System.out.println(\"Radiobutton not found!!\");\n" + 
+						"\t\t\t\t\t }\n" +
+						"\t\t\t\t }\n"+
+						"\t\t\t }\n"+
+						"\t\t } else if(elementName.equals(\"selectcheckbox\")) {\n"+
+						"\t\t\t WebElement inputEle = null;\n"+
+						"\t\t\t inputEle = qvObj.returnWebElement(labels);\n"+
+						"\t\t\t if(inputEle != null) {\n"+
+						"\t\t\t\t finalEle = inputEle.findElement(By.xpath(\"./preceding-sibling::input[@type='checkbox']\"));\n"+
+						"\t\t\t } else {\n"+
+						"\t\t\t\t finalEle = driver.findElement(By.xpath(\"//input[@type='checkbox' and @value='\"+labels.get(0)+\"']\"));\n"+
+						"\t\t\t }\n"+
+						"\t\t }\n"+
+						"\t }\n";
+			fileWritter.write(codeLine);
 			fileWritter.write("}");
 			fileWritter.close();
 			br.close();

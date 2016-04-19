@@ -159,13 +159,22 @@ public class MainQV {
 	}
 	
 	public void searchLabel(Node<WebElement> node,String label) {
-		if(node.data.getText().equalsIgnoreCase(label)) {
+		if(label.equals("input") && node.data.getTagName().equals(label)) {
+			System.out.println("Found the input web Element: " + label + ", Id: "+ node.data.getAttribute("id"));
+			if(!mapLabelToNode.containsKey(label)) {
+				mapLabelToNode.put(label, new StackNode<WebElement>(label));
+			}
+			mapLabelToNode.get(label).listInstances.add(node.data);
+			System.out.println("Pushed input element id into map "+node.data.getAttribute("id"));
+			
+		} else if(node.data.getText().equalsIgnoreCase(label)) {
 			System.out.println("Found the label.. "+ label);
 			if(!mapLabelToNode.containsKey(label)) {
 				mapLabelToNode.put(label, new StackNode<WebElement>(label));
 			}
 			mapLabelToNode.get(label).listInstances.add(node.data);
 			System.out.println("Pushed label into map "+label);
+			
 		} else {
 			for(Node<WebElement> childNode : node.children) {
 				searchLabel(childNode,label);
