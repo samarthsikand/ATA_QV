@@ -80,14 +80,18 @@ public class MainQV {
 		if(!URL.equals(driver.getCurrentUrl())) {
 			System.out.println("URL is not the same");
 			URL = driver.getCurrentUrl();
-			mapElementToNode.clear();
-			System.out.println("Creating child nodes..!");
-			for(WebElement ele : listOfElement) {
-				rootNode = null;
-				rootNode = new Node<WebElement>(ele,null);
-				System.out.println(ele.getTagName());
-				createChildNodes(ele,1,rootNode);
-			}
+			createDOMTree(listOfElement);
+		}
+	}
+	
+	public void createDOMTree(List<WebElement> listOfElement) {
+		mapElementToNode.clear();
+		System.out.println("Creating child nodes..!");
+		for(WebElement ele : listOfElement) {
+			rootNode = null;
+			rootNode = new Node<WebElement>(ele,null);
+			System.out.println(ele.getTagName());
+			createChildNodes(ele,1,rootNode);
 		}
 	}
 	
@@ -131,11 +135,6 @@ public class MainQV {
 		//Filtering out instances
 		WebElement ele = runningFilterInstances();
 		return ele;
-	}
-	
-	public void createDOMTree() {
-		Node<String> node = new Node<String>();
-		node.data = "Hello World";
 	}
 	
 	public Node<WebElement> createDOMNode() {
