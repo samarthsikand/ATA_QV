@@ -37,8 +37,8 @@ public class AutomationATA {
 		}
 	}
 	
-	public void checkIfURLChanged() {
-		if(!URL.equals(driver.getCurrentUrl())) {
+	public void checkIfURLChanged(boolean forceReset) {
+		if(!URL.equals(driver.getCurrentUrl()) || forceReset) {
 			List<WebElement> listOfElement = driver.findElements(By.xpath("//html"));
 			System.out.println("URL is not the same");
 			URL = driver.getCurrentUrl();
@@ -60,7 +60,7 @@ public class AutomationATA {
 	}
 	
 	public void executeTuple(Tuple tuple) {
-		checkIfURLChanged();
+		checkIfURLChanged(false);
 		WebElement element = null;
 		
 		if(!tuple.action.equalsIgnoreCase("open")) {
@@ -76,6 +76,15 @@ public class AutomationATA {
 				}
 			} else {
 				System.out.println("The output is as follows: There is no such anchor!!");
+				checkIfURLChanged(true);
+				element = driver.findElement(By.xpath(tuple.target));
+				listOfAnchors = generateAnchors(element);
+				if(listOfAnchors != null) {
+					System.out.println("The output is as follows: ");
+					for(String str : listOfAnchors) {
+						System.out.println(str);
+					}
+				}
 			}
 			
 			for(WebElement eleNode : mapWebElementToNode.keySet()) {
@@ -93,7 +102,7 @@ public class AutomationATA {
 		ANode<WebElement> closestTree = null;
 		List<ANode<WebElement>> listPathFromTargetToRoot = null;
 		Set<ANode<WebElement>> setPathFromTargetToRoot = new HashSet<ANode<WebElement>>();
-		if(ele.getTagName().equals("a") || ele.getTagName().equals("button") || (ele.getTagName().equals("input") && ele.getAttribute("type").equals("submit"))) {
+		if(ele.getTagName().equals("a") || ele.getTagName().equals("button") || (ele.getTagName().equals("input") && ele.getAttribute("type").equals("submit")) || ele.getTagName().equals("td")) {
 			label = ele.getText();
 			otherLabels = driver.findElements(By.xpath("//*[contains(text(),'"+label+"')]"));
 		} else {
@@ -102,50 +111,61 @@ public class AutomationATA {
 			otherLabels = driver.findElements(By.xpath("//"+label+""));
 		}
 		ANode<WebElement> subtreeTargetNode = getInterestingSubtree(otherLabels,ele);
-		System.out.println("The target tree is : "+subtreeTargetNode.data.getTagName()+" and its value is: "+ subtreeTargetNode.value + " ,class: "+subtreeTargetNode.data.getAttribute("class"));
-		listPathFromTargetToRoot = getPathFromTargetToRoot(ele);
-		setPathFromTargetToRoot.addAll(listPathFromTargetToRoot);
-		
 		System.out.println("Other Labels size: "+otherLabels.size());
-		for(WebElement otherEle : otherLabels) {
-			if(!otherEle.equals(ele)) {
-				otherTreeNode = getOtherSubTree(otherEle,setPathFromTargetToRoot);
-				System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" ID:" +otherTreeNode.data.getAttribute("id") + " Class:" + otherTreeNode.data.getAttribute("class"));
-				
-				if(!otherLabelTrees.contains(otherTreeNode)) {
-					otherLabelTrees.add(otherTreeNode);
+		
+		if(subtreeTargetNode != null) {
+			System.out.println("The target tree is : "+subtreeTargetNode.data.getTagName()+" and its value is: "+ subtreeTargetNode.value + " ,class: "+subtreeTargetNode.data.getAttribute("class"));
+			listPathFromTargetToRoot = getPathFromTargetToRoot(ele);
+			setPathFromTargetToRoot.addAll(listPathFromTargetToRoot);
+			
+			for(WebElement otherEle : otherLabels) {
+				if(!otherEle.equals(ele) && !(otherEle.getTagName().equals("script") || otherEle.getTagName().equals("style") || otherEle.getTagName().equals("meta"))) {
+					otherTreeNode = getOtherSubTree(otherEle,setPathFromTargetToRoot);
+					System.out.println("Other Label Node: "+otherTreeNode.data.getTagName()+" Name: "+otherTreeNode.data.getText()+" ID:" +otherTreeNode.data.getAttribute("id") + " Class:" + otherTreeNode.data.getAttribute("class"));
+					
+					if(!otherLabelTrees.contains(otherTreeNode)) {
+						otherLabelTrees.add(otherTreeNode);
+					}
 				}
 			}
-		}
-		
-		while(otherLabelTrees.size() != 0) {
-			String distinctLabel = getDistinctLabel(subtreeTargetNode,otherLabelTrees);
-			System.out.println("Distinct label:"+distinctLabel);
-			if(distinctLabel != null) {
-				listOfAnchors.add(distinctLabel);
-				return listOfAnchors;
-			}
-			closestTree = getClosestTree(subtreeTargetNode,otherLabelTrees,listPathFromTargetToRoot,setPathFromTargetToRoot);
-			System.out.println("The closest tree details: Tag Name: "+closestTree.data.getTagName() + ", Id:"+closestTree.data.getAttribute("id") + ", Class" + closestTree.data.getAttribute("class"));
-			Set<ANode<WebElement>> closestTreeList = new HashSet<ANode<WebElement>>();
-			closestTreeList.add(closestTree);
-			distinctLabel = getDistinctLabel(subtreeTargetNode,closestTreeList);
 			
-			if(distinctLabel == null) {
-				return null;
+			while(otherLabelTrees.size() != 0) {
+				String distinctLabel = getDistinctLabel(subtreeTargetNode,otherLabelTrees);
+				System.out.println("Distinct label:"+distinctLabel);
+				if(distinctLabel != null) {
+					listOfAnchors.add(distinctLabel);
+					return listOfAnchors;
+				}
+				closestTree = getClosestTree(subtreeTargetNode,otherLabelTrees,listPathFromTargetToRoot,setPathFromTargetToRoot);
+				System.out.println("The closest tree details: Tag Name: "+closestTree.data.getTagName() + ", Id:"+closestTree.data.getAttribute("id") + ", Class" + closestTree.data.getAttribute("class"));
+				Set<ANode<WebElement>> closestTreeList = new HashSet<ANode<WebElement>>();
+				closestTreeList.add(closestTree);
+				distinctLabel = getDistinctLabel(subtreeTargetNode,closestTreeList);
+				
+				if(distinctLabel == null) {
+					return null;
+				}
+				listOfAnchors.add(distinctLabel);
+				subtreeTargetNode = mergeSubtrees(subtreeTargetNode,closestTree,otherLabelTrees);
+				otherLabelTrees.remove(subtreeTargetNode);
 			}
-			listOfAnchors.add(distinctLabel);
-			subtreeTargetNode = mergeSubtrees(subtreeTargetNode,closestTree,otherLabelTrees);
-			otherLabelTrees.remove(subtreeTargetNode);
 		}
 		
 		return null;
 	}
 	
 	public ANode<WebElement> getInterestingSubtree(List<WebElement> otherLabels, WebElement ele) {
+		if(!mapWebElementToNode.containsKey(ele)) {
+			System.out.println("The Element is not in the dom structure.!");
+			return null;
+		}
 		mapWebElementToNode.get(ele).value = 1;
 		for(WebElement element : otherLabels) {
-			mapWebElementToNode.get(element).value = 1;
+			if(mapWebElementToNode.containsKey(element)) {
+				mapWebElementToNode.get(element).value = 1;
+			} else {
+				System.out.println("Why did this element not be in tree? "+ element.getTagName()+" , Id: "+element.getAttribute("id"));
+			}
 		}
 		calculateValueOfNode(rootNode);
 		
